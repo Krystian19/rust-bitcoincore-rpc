@@ -147,6 +147,7 @@ fn main() {
     test_get_block_count(&cl);
     test_get_block_hash(&cl);
     test_get_block(&cl);
+    test_get_block_raw(&cl);
     test_get_block_header_get_block_header_info(&cl);
     test_get_block_stats(&cl);
     test_get_block_stats_fields(&cl);
@@ -303,6 +304,19 @@ fn test_get_block(cl: &Client) {
 
     let tip = cl.get_best_block_hash().unwrap();
     let info = cl.get_block_info(&tip).unwrap();
+    assert_eq!(info.hash, tip);
+    assert_eq!(info.confirmations, 1);
+}
+
+fn test_get_block_raw(cl: &Client) {
+    let tip = cl.get_best_block_hash().unwrap();
+    let block = cl.get_block(&tip).unwrap();
+    let hex = cl.get_block_hex(&tip).unwrap();
+    assert_eq!(block, deserialize(&Vec::<u8>::from_hex(&hex).unwrap()).unwrap());
+    assert_eq!(hex, serialize(&block).to_hex());
+
+    let tip = cl.get_best_block_hash().unwrap();
+    let info = cl.get_block_raw_info(&tip).unwrap();
     assert_eq!(info.hash, tip);
     assert_eq!(info.confirmations, 1);
 }
@@ -1081,11 +1095,7 @@ fn test_add_ban(cl: &Client) {
     let res = cl.list_banned().unwrap();
     assert_eq!(res.len(), 0);
 
-    assert_error_message!(
-        cl.add_ban("INVALID_STRING", 0, false),
-        -30,
-        "Error: Invalid IP/Subnet"
-    );
+    assert_error_message!(cl.add_ban("INVALID_STRING", 0, false), -30, "Error: Invalid IP/Subnet");
 }
 
 fn test_set_network_active(cl: &Client) {
