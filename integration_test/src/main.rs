@@ -316,7 +316,7 @@ fn test_get_block_raw(cl: &Client) {
     assert_eq!(hex, serialize(&block).to_hex());
 
     let tip = cl.get_best_block_hash().unwrap();
-    let info = cl.get_block_raw_info(&tip).unwrap();
+    let info = cl.get_block_info_raw(&tip).unwrap();
     assert_eq!(info.hash, tip);
     assert_eq!(info.confirmations, 1);
 }

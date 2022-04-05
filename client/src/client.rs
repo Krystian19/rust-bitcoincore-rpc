@@ -334,7 +334,7 @@ pub trait RpcApi: Sized {
     }
     //TODO(stevenroose) add getblock_txs
 
-    fn get_block_raw_info(&self, hash: &bitcoin::BlockHash) -> Result<json::GetBlockRawResult> {
+    fn get_block_info_raw(&self, hash: &bitcoin::BlockHash) -> Result<json::GetBlockRawResult> {
         self.call("getblock", &[into_json(hash)?, 2.into()])
     }
 
